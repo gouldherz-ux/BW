@@ -144,7 +144,7 @@ function createVariantModels(variantId) {
     const areolaColor = new THREE.Color(colors.breast);
     areolaColor.multiplyScalar(0.7);
     
-    const areolaM material = new THREE.MeshStandardMaterial({
+    const areolaM aterial = new THREE.MeshStandardMaterial({
         color: areolaColor,
         metalness: 0.05,
         roughness: 0.8
