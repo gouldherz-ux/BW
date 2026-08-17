@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Реконструкция на Гърдо - Сравнение на Варианти</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .comparison-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .variant-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .variant-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .variant-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .variant-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .variant-header .measurements {
+            font-size: 0.95em;
+            opacity: 0.9;
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .measurement-item {
+            text-align: center;
+        }
+
+        .measurement-item .label {
+            display: block;
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .measurement-item .value {
+            display: block;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .variant-body {
+            padding: 20px;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            position: relative;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .variant-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .variant-controls button {
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .variant-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .variant-controls button:active {
+            transform: translateY(0);
+        }
+
+        .variant-info {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.5;
+            margin-top: 12px;
+        }
+
+        .control-panel {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .control-panel h3 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            color: #333;
+            font-size: 0.95em;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .control-group input[type="range"],
+        .control-group input[type="color"],
+        .control-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .control-group input[type="color"] {
+            padding: 4px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1024px) {
+            .comparison-section {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .comparison-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 3D Реконструкция на Гърдо - Сравнение на Варианти</h1>
+            <p>Три варианта с различни дължини на зърното</p>
+        </div>
+
+        <div class="content">
+            <div class="comparison-info">
+                <strong>💡 Съвет:</strong> Всеки вариант може да се преглеждат независимо. Щракнете и влачете върху 3D модела за ротация.
+            </div>
+
+            <div class="control-panel">
+                <h3>🎨 Глобални настройки</h3>
+                <div class="control-group">
+                    <label>Цвят на гърдото:</label>
+                    <input type="color" id="globalBreastColor" value="#ffb6c1" onchange="updateAllColors()">
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <!-- Вариант 1: 2.1 cm -->
+                <div class="variant-card">
+                    <div class="variant-header">
+                        <h2>📏 Вариант 1</h2>
+                        <div class="measurements">
+                            <div class="measurement-item">
+                                <span class="label">Зърно</span>
+                                <span class="value">21 mm</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="label">Ареола</span>
+                                <span class="value">65 mm</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="label">Основа</span>
+                                <span class="value">155 mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="variant-body">
+                        <div id="canvas-variant1" class="canvas-container"></div>
+                        <div class="variant-controls">
+                            <button onclick="resetVariantCamera(1)">🔄 Нулиране</button>
+                            <button onclick="autoRotateVariant(1)">🔁 Ротация</button>
+                        </div>
+                        <div class="variant-info">
+                            <strong>Максимална проекция (21 mm):</strong> Най-видимият вариант. Подходящ за максимален естетически ефект.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вариант 2: 1.8 cm -->
+                <div class="variant-card">
+                    <div class="variant-header">
+                        <h2>📏 Вариант 2</h2>
+                        <div class="measurements">
+                            <div class="measurement-item">
+                                <span class="label">Зърно</span>
+                                <span class="value">18 mm</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="label">Ареола</span>
+                                <span class="value">65 mm</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="label">Основа</span>
+                                <span class="value">155 mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="variant-body">
+                        <div id="canvas-variant2" class="canvas-container"></div>
+                        <div class="variant-controls">
+                            <button onclick="resetVariantCamera(2)">🔄 Нулиране</button>
+                            <button onclick="autoRotateVariant(2)">🔁 Ротация</button>
+                        </div>
+                        <div class="variant-info">
+                            <strong>Средна проекция (18 mm):</strong> Баланс между естественост и видимост. Препоръчаният вариант.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вариант 3: 1.5 cm -->
+                <div class="variant-card">
+                    <div class="variant-header">
+                        <h2>📏 Вариант 3</h2>
+                        <div class="measurements">
+                            <div class="measurement-item">
+                                <span class="label">Зърно</span>
+                                <span class="value">15 mm</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="label">Ареола</span>
+                                <span class="value">65 mm</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="label">Основа</span>
+                                <span class="value">155 mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="variant-body">
+                        <div id="canvas-variant3" class="canvas-container"></div>
+                        <div class="variant-controls">
+                            <button onclick="resetVariantCamera(3)">🔄 Нулиране</button>
+                            <button onclick="autoRotateVariant(3)">🔁 Ротация</button>
+                        </div>
+                        <div class="variant-info">
+                            <strong>Минимална проекция (15 mm):</strong> Най-естественият вид. За предпочитащи по-дискретен облик.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="label">Разлика между V1 и V2</div>
+                    <div class="value">3 mm</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Разлика между V2 и V3</div>
+                    <div class="value">3 mm</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Обща разлика V1-V3</div>
+                    <div class="value">6 mm</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Ареола диаметър</div>
+                    <div class="value">6.5 cm</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/variants.js"></script>
+</body>
+</html>
