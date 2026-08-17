@@ -72,7 +72,7 @@ function initVariant(variantId) {
     // Светлина
     setupLighting(variantId);
 
-    // Создание модели
+    // Създание модели
     createVariantModels(variantId);
 
     // События
@@ -144,13 +144,13 @@ function createVariantModels(variantId) {
     const areolaColor = new THREE.Color(colors.breast);
     areolaColor.multiplyScalar(0.7);
     
-    const areolaM aterial = new THREE.MeshStandardMaterial({
+    const areolaMaterial = new THREE.MeshStandardMaterial({
         color: areolaColor,
         metalness: 0.05,
         roughness: 0.8
     });
 
-    meshes[variantId].areola = new THREE.Mesh(areolaGeometry, areolaM aterial);
+    meshes[variantId].areola = new THREE.Mesh(areolaGeometry, areolaMaterial);
     meshes[variantId].areola.position.z = nippleHeight + 0.01;
     meshes[variantId].areola.castShadow = true;
     meshes[variantId].areola.receiveShadow = true;
